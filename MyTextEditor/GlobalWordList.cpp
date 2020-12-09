@@ -18,6 +18,9 @@ GlobalWordList* GlobalWordList::getInstance() {
 void GlobalWordList::setWordList(vector<string>& wordList) {
 	wordList_ = wordList;
 }
+vector<string>& GlobalWordList::getWordList() {
+	return wordList_;
+}
 vector<string>& GlobalWordList::getSubWordList(int beginIdx, int endIdx) {
 	vector<string> subWordList;
 	subWordList.assign(wordList_.begin() + beginIdx, wordList_.end() + endIdx);

@@ -18,6 +18,7 @@ public:
 	static GlobalWordList* getInstance();
 	void setWordList(vector<string>& wordList);
 
+	vector<string>& getWordList();
 	vector<string>& getSubWordList(int beginIdx, int endIdx);
 
 	int wordListSize();

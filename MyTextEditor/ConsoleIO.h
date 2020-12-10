@@ -34,7 +34,7 @@ public:
 
 	void loadTextFile(string path);
 
-	vector<string>& splitParameters(string paramsText);
+	vector<string> splitParameters(string paramsText);
 
 	int checkLineNum(string paramLineNum);
 	int checkWordNum(string paramWordNum);

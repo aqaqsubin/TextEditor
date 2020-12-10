@@ -15,15 +15,27 @@ TextFile::TextFile(string path) {
 	ifstream in(path);
 
 	string readBuffer;
-
+	
 	if (in.is_open()) {
 		getline(in, readBuffer);
+		
+		for (int cIdx = 0; cIdx < readBuffer.size(); cIdx++) {
+			if (static_cast<int> (readBuffer[cIdx]) == CHAR_DOUBLE_QUOTATION_MARK || static_cast<int>(readBuffer[cIdx]) == CHAR_SINGLE_QUOTATION_MARK) {
+				string backslash;
+				backslash += static_cast<char> (CHAR_BACKSLASH);
+				
+				readBuffer.insert(cIdx, backslash);
+			}
+		}
 		text_.append(readBuffer).append(" ");
 	}
+	else
+		throw string("File Cannot Open");
+
 	in.close();
 }
 
-vector<string>& TextFile::createWordList(char delimiter) {
+vector<string> TextFile::createWordList(char delimiter) {
 	vector<string> wordList;
 
 	stringstream strStream(text_);
@@ -35,32 +47,39 @@ vector<string>& TextFile::createWordList(char delimiter) {
 	return wordList;
 }
 
-void TextFile::setPageList(vector<string> wordList) {
+void TextFile::setPageList(vector<string>& wordList) {
 
 	int sumOfByte = 0;
 
 	int lineIter = 1;
-	int wordIter = 1;
 	vector<string> page;
 	string line;
-
+	
+	page.clear();
 	pageList.clear();
-
 	for (int i = 0; i < wordList.size(); i++) {
-		if (sumOfByte + wordList[i].size() + 1 >= MAX_LINE_SIZE) {
-			page.insert(page.begin() + lineIter-1, line);
-			lineIter++;
-			sumOfByte = 0;
+		try {
+			if (sumOfByte + wordList[i].size() > MAX_LINE_SIZE) {
+				page.push_back(line);
+
+				line.clear();
+				lineIter++;
+				sumOfByte = 0;
+			}
+			if (lineIter > MAX_LINE_NUM) {
+				pageList.insert(pageList.begin() + i, page);
+				page.clear();
+			}
+			sumOfByte += wordList[i].size() + 1;
+			if(sumOfByte < MAX_LINE_SIZE)
+				line.append(wordList[i]).append(" ");
 		}
-		if (lineIter > MAX_LINE_NUM) {
-			pageList.insert(pageList.begin() + i, page);
-			page.clear();
+		catch (...) {
+			cout << i << endl;
 		}
-		sumOfByte += wordList[i].size() + 1;
-		line.append(wordList[i]).append(" ");
-		wordIter++;
 
 	}
+	
 }
 vector<vector<string>>& TextFile::getPageList() {
 	return pageList;

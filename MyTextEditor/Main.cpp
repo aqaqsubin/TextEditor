@@ -6,10 +6,18 @@ using namespace std;
 
 int main() {
 	ConsoleIO console;
-	console.loadTextFile("C://Users//aqaq9//Desktop//test.txt");
-	cout << GlobalWordList::getInstance()->wordListSize() << endl;
-	console.printPage(0);
+	
+	try {
+		console.loadTextFile("C://Users//kisti_user//Desktop//test.txt");
+		console.printPage(0);
+		cout << GlobalWordList::getInstance()->wordListSize() << endl;
 
+	}
+	catch (string& str) {
+		cout << str << endl;
+		return -1;
+	}
+	
 	string command;
 	while (!console.state) {
 		cout << "ют╥б : ";

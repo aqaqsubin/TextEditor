@@ -8,14 +8,20 @@
 #include "GlobalWordList.h"
 
 void ConsoleIO::loadTextFile(string path) {
-	textFile_ = new TextFile(path);
-	vector<string> wordList = textFile_->createWordList(DELIMITER_WORD);
-	GlobalWordList::getInstance()->setWordList(wordList);
-	
-	textFile_->setPageList(wordList);
+	try {
+		textFile_ = new TextFile(path);
+		cout << textFile_->text_ << endl;
+		vector<string> wordList_(textFile_->createWordList(DELIMITER_WORD));
+		GlobalWordList::getInstance()->setWordList(wordList_);
+
+		textFile_->setPageList(wordList_);
+	}
+	catch (string& str) {
+		throw;
+	}
 }
 
-vector<string>& ConsoleIO::splitParameters(string paramsText) {
+vector<string> ConsoleIO::splitParameters(string paramsText) {
 	stringstream strStream(paramsText);
 	vector<string> params;
 	string param;

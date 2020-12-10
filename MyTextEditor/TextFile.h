@@ -7,9 +7,9 @@ class TextFile {
 private:
 	vector<vector<string>> pageList;
 	string filePath_;
+	string text_;
 
 public:
-	string text_;
 	TextFile(string path);
 
 	vector<string> createWordList(char delimiter);

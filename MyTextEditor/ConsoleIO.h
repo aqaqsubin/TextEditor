@@ -15,14 +15,10 @@ enum ErrorType{
 
 #pragma once
 class ConsoleIO {
-public:
-	int state = 1;
-	ErrorType errorType;
+
+private:
 	int currentPage = 0;
 	TextFile* textFile_;
-
-	void loadTextFile(string path);
-
 	vector<string> splitParameters(string paramsText);
 
 	int checkLineNum(string paramLineNum);
@@ -30,8 +26,6 @@ public:
 	int checkWord(string word);
 
 	int checkUserInput(char commandType, vector<string> params);
-
-	void handlingCommand(string command);
 
 	int insertWord(vector<string> params);
 
@@ -49,4 +43,11 @@ public:
 
 	int getBeginLineNum(int pageNo);
 
+public:
+	int state = 1;
+	ErrorType errorType;
+	
+	void loadTextFile(string path);
+
+	void handlingCommand(string command);
 };

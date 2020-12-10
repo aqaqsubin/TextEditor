@@ -1,20 +1,12 @@
 #pragma once
 #include <string>
-
-#define MAX_LINE_NUM					20
-#define MAX_LINE_SIZE					75
-
-#define CHAR_DOUBLE_QUOTATION_MARK		34
-#define CHAR_SINGLE_QUOTATION_MARK		39
-#define CHAR_BACKSLASH					92
-
-using namespace std;
+#include "cdEditor.h"
 
 
 class TextFile {
 private:
 	vector<vector<string>> pageList;
-	
+	string filePath_;
 
 public:
 	string text_;
@@ -24,10 +16,10 @@ public:
 
 	void setPageList(vector<string>& wordList);
 
-	void restructPageList(vector<string> wordList, int searchWordIdx);
+	int restructPageList(vector<string> wordList, int searchWordIdx);
 
-	vector<vector<string>>& getPageList();
+	vector<vector<string>> getPageList();
 
-	void saveTextFile();
+	void saveTextFile(vector<string>& wordList);
 
 };

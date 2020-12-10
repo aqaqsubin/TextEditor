@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+
 #include "GlobalWordList.h"
 
 using namespace std;
@@ -61,19 +62,19 @@ int GlobalWordList::getIndex(int lineNum, int wordNum) {
 	int sumOfByte = 0;
 
 	int wordIter = 1;
-	int numOfWordInLine = 1;
-
 	for (int i = 0; i < wordList_.size(); i++) {
-		if (lineIter == lineNum && numOfWordInLine == wordNum)
+		if (lineIter == lineNum && wordIter == wordNum)
 			return i;
 
-		if (sumOfByte + wordList_[i].size() + 1 >= 75) {
+		if (sumOfByte + wordList_[i].size() > MAX_LINE_SIZE) {
 			lineIter++;
 			sumOfByte = 0;
 		}
-		sumOfByte += wordList_[i].size() + 1;
-		numOfWordInLine++;
-
+		wordIter++;
+		sumOfByte += wordList_[i].size();
+		if (sumOfByte < MAX_LINE_SIZE) {
+			sumOfByte += 1;
+		}
 	}
 	return -1;
 }

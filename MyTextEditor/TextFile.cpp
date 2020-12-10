@@ -7,26 +7,15 @@
 #include "GlobalWordList.h"
 #include "TextFile.h"
 
-
-#include <iostream>
-using namespace std;
-
 TextFile::TextFile(string path) {
-	ifstream in(path);
+
+	filePath_ = path;
+	ifstream in(filePath_);
 
 	string readBuffer;
-	
+
 	if (in.is_open()) {
 		getline(in, readBuffer);
-		
-		for (int cIdx = 0; cIdx < readBuffer.size(); cIdx++) {
-			if (static_cast<int> (readBuffer[cIdx]) == CHAR_DOUBLE_QUOTATION_MARK || static_cast<int>(readBuffer[cIdx]) == CHAR_SINGLE_QUOTATION_MARK) {
-				string backslash;
-				backslash += static_cast<char> (CHAR_BACKSLASH);
-				
-				readBuffer.insert(cIdx, backslash);
-			}
-		}
 		text_.append(readBuffer).append(" ");
 	}
 	else
@@ -48,65 +37,93 @@ vector<string> TextFile::createWordList(char delimiter) {
 }
 
 void TextFile::setPageList(vector<string>& wordList) {
-
 	int sumOfByte = 0;
 
 	int lineIter = 1;
 	vector<string> page;
 	string line;
-	
+
 	page.clear();
 	pageList.clear();
 	for (int i = 0; i < wordList.size(); i++) {
-		try {
-			if (sumOfByte + wordList[i].size() > MAX_LINE_SIZE) {
-				page.push_back(line);
 
-				line.clear();
-				lineIter++;
-				sumOfByte = 0;
-			}
-			if (lineIter > MAX_LINE_NUM) {
-				pageList.insert(pageList.begin() + i, page);
-				page.clear();
-			}
-			sumOfByte += wordList[i].size() + 1;
-			if(sumOfByte < MAX_LINE_SIZE)
-				line.append(wordList[i]).append(" ");
-		}
-		catch (...) {
-			cout << i << endl;
-		}
+		if (sumOfByte + wordList[i].size() > MAX_LINE_SIZE) {
+			page.push_back(line);
 
-	}
-	
-}
-vector<vector<string>>& TextFile::getPageList() {
-	return pageList;
-}
-void TextFile::restructPageList(vector<string> wordList, int searchWordIdx) {
-	int sumOfByte = 0;
-
-	int lineIter = 1;
-	vector<string> page;
-	string line;
-
-	for (int i = 0; i < wordList.size(); i++) {
-		if (sumOfByte + wordList[i].size() + 1 >= MAX_LINE_SIZE) {
-			page.insert(page.begin() + lineIter - 1, line);
+			line.clear();
 			lineIter++;
 			sumOfByte = 0;
 		}
-		if (lineIter > MAX_LINE_NUM || i == searchWordIdx) {
-			pageList.insert(pageList.begin() + i, page);
+		if (lineIter > MAX_LINE_NUM) {
+			pageList.push_back(page);
 			page.clear();
+			lineIter = 1;
 		}
-		sumOfByte += wordList[i].size() + 1;
-		line.append(wordList[i]).append(" ");
-
+		sumOfByte += wordList[i].size();
+		line.append(wordList[i]);
+		if (sumOfByte < MAX_LINE_SIZE) {
+			sumOfByte += 1;
+			line.append(" ");
+		}
 	}
 }
+vector<vector<string>> TextFile::getPageList() {
+	return pageList;
+}
+int TextFile::restructPageList(vector<string> wordList, int searchWordIdx) {
+	int sumOfByte = 0;
 
-void TextFile::saveTextFile() {
+	int lineIter = 1;
+	int pageIdx = 0;
+	vector<string> page;
+	string line;
+
+	page.clear();
+	pageList.clear();
+	for (int i = 0; i < wordList.size(); i++) {
+		if (sumOfByte + wordList[i].size() > MAX_LINE_SIZE) {
+			page.push_back(line);
+
+			line.clear();
+			lineIter++;
+			sumOfByte = 0;
+		}
+		if (lineIter > MAX_LINE_NUM) {
+			pageList.push_back(page);
+
+			page.clear();
+			lineIter = 1;
+		}
+		if (i == searchWordIdx && sumOfByte) {
+			page.push_back(line);
+			line.clear();
+			sumOfByte = 0;
+
+			pageList.push_back(page);
+			pageIdx = pageList.size();
+
+			page.clear();
+			lineIter = 1;
+		}
+		sumOfByte += wordList[i].size();
+		line.append(wordList[i]);
+		if (sumOfByte < MAX_LINE_SIZE) {
+			sumOfByte += 1;
+			line.append(" ");
+		}
+	}
+	return pageIdx;
+}
+
+void TextFile::saveTextFile(vector<string>& wordList) {
+	text_.clear();
+	for (int idx = 0; idx < wordList.size()-1; idx++) 
+		text_.append(wordList[idx]).append(" ");
+	
+	text_.append(wordList[wordList.size() - 1]);
+
+	ofstream out(filePath_);
+	if (out.is_open())
+		out << text_;
 
 }

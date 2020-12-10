@@ -2,16 +2,12 @@
 #include "ConsoleIO.h"
 #include <iostream>
 
-using namespace std;
-
 int main() {
 	ConsoleIO console;
 	
 	try {
-		console.loadTextFile("C://Users//kisti_user//Desktop//test.txt");
+		console.loadTextFile("C://Users//aqaq9//Documents//TextEditor//test.txt");
 		console.printPage(0);
-		cout << GlobalWordList::getInstance()->wordListSize() << endl;
-
 	}
 	catch (string& str) {
 		cout << str << endl;
@@ -19,16 +15,19 @@ int main() {
 	}
 	
 	string command;
-	while (!console.state) {
+	while (console.state) {
 		cout << "입력 : ";
 		cin >> command;
+		cout << CUTOFF_LINE << endl;
+
 		console.handlingCommand(command);
 		
-		if(console.state == STATE_ERROR)
-			cout << "다시 입력하세요." << endl;
+		if (console.state == STATE_ERROR) {
+			console.printError();
+		}
 	}
 
-	//cout << GlobalWordList::getInstance()->wordListSize() << endl;
+	cout << "end" << endl;
 
 	return 1;
 }

@@ -1,8 +1,6 @@
 #include <vector>
 #include <string>
-
-
-using namespace std;
+#include "cdEditor.h"
 
 class GlobalWordList {
 

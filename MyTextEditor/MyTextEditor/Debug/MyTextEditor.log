@@ -1,0 +1,20 @@
+﻿  Editor.cpp
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(18,17): warning C4101: 'errorMsg' :참조되지 않은 지역 변수입니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(43,21): warning C4101: 'e' :참조되지 않은 지역 변수입니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(231,31): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(236,34): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(262,46): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(266,30): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Editor.cpp(270,34): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  GlobalWordList.cpp
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\GlobalWordList.cpp(31,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\GlobalWordList.cpp(39,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\GlobalWordList.cpp(51,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  Main.cpp
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\Main.cpp(12,17): warning C4101: 'str' :참조되지 않은 지역 변수입니다.
+  TextFile.cpp
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\TextFile.cpp(48,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\TextFile.cpp(95,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\aqaq9\source\repos\MyTextEditor\MyTextEditor\TextFile.cpp(137,24): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  코드를 생성하고 있습니다...
+  MyTextEditor.vcxproj -> C:\Users\aqaq9\source\repos\MyTextEditor\Debug\MyTextEditor.exe

@@ -105,7 +105,7 @@ int Editor::checkCommandValid(char commandType, vector<string> params) {
 		return STATE_NORMAL;
 
 	case COMMAND_NEXT_PAGE:
-		if (currentPage == textFile_->getPageList().size() - 1) {
+		if (textFile_->isLastPage(currentPage)) {
 			errorType = ERROR_OUT_OF_PAGE;
 			return STATE_ERROR;
 		}
@@ -127,8 +127,11 @@ void Editor::handlingCommand(string command) {
 
 	if (state == STATE_ERROR) {
 		errorType = errorType == NOT_ERROR ? ERROR_PARAMETER_VAL : errorType;
+		printError();
+		printPage();
 		return;
 	}
+
 	switch (commandType_) {
 	case COMMAND_INSERT_WORD:
 		state = insertWord(params_);
@@ -137,21 +140,26 @@ void Editor::handlingCommand(string command) {
 		state = delWord(params_);
 		break;
 	case COMMAND_RESTRUCT_PAGE:
-		state = restructByWord(params_);
+		state = restructByWord(params_[0]);
 		break;
 	case COMMAND_MODIFY_WORD:
 		state = modifyAllWord(params_);
 		break;
 	case COMMAND_PRE_PAGE:
-		--currentPage;
+		printPrePage();
 		break;
 	case COMMAND_NEXT_PAGE:
-		++currentPage;
+		printNextPage();
 		break;
 	case COMMAND_SAVE_FILE:
 		saveFile();
 		break;
 	}
+
+	printError();
+	if (commandType_ != COMMAND_NEXT_PAGE || commandType_ != COMMAND_PRE_PAGE)
+		printPage();
+
 }
 
 int Editor::insertWord(vector<string> params) {
@@ -163,7 +171,7 @@ int Editor::insertWord(vector<string> params) {
 		errorType = ERROR_OUT_OF_INDEX;
 		return STATE_ERROR;
 	}
-	GlobalWordList::getInstance()->insertWord(idx, params[2]);
+	GlobalWordList::getInstance()->insertWord(idx+1, params[2]);
 	textFile_->setPageList(GlobalWordList::getInstance()->getWordList());
 	
 	return STATE_NORMAL;
@@ -190,8 +198,8 @@ int Editor::modifyAllWord(vector<string> params) {
 	return STATE_NORMAL;
 }
 
-int Editor::restructByWord(vector<string> params) {
-	int idx = GlobalWordList::getInstance()->getIndex(params[0]);
+int Editor::restructByWord(string param) {
+	int idx = GlobalWordList::getInstance()->getIndex(param);
 	if (idx < 0) {
 		errorType = ERROR_NOT_FOUND_WORD;
 		return STATE_ERROR;
@@ -200,33 +208,83 @@ int Editor::restructByWord(vector<string> params) {
 
 	return STATE_NORMAL;
 }
-
+int Editor::restorePageList() {
+	textFile_->restructPageList(GlobalWordList::getInstance()->getWordList(), 0);
+	return STATE_NORMAL;
+}
 void Editor::saveFile() {
 	textFile_->saveTextFile(GlobalWordList::getInstance()->getWordList());
 	state = STATE_TERMINATE;
 }
+void Editor::printPrePage() {
+	restorePageList();
+	vector<string> resultPage;
+	vector<string> curPage = textFile_->getPageList().at(currentPage);
+	vector<string> prePage = textFile_->getPageList().at(currentPage - 1);
+	int lineBeginIdx = getBeginLineNum(currentPage - 1) + 1;
+	int prePageSize = textFile_->getPageSize(currentPage - 1);
 
+	for (int preIdx = 0; preIdx < prePageSize; preIdx++) {
+		resultPage.push_back(prePage[preIdx]);
+	}
+	if (currentPage - 1 == 0 && prePageSize < MAX_LINE_NUM) {
+		for (int curIdx = 0; curIdx < curPage.size()- prePageSize; curIdx++) {
+			resultPage.push_back(curPage[curIdx]);
+		}
+	}
+
+	for (int lineIter = 0; lineIter < resultPage.size(); lineIter++) {
+		cout << setw(2) << lineBeginIdx + lineIter << "|\t" << resultPage[lineIter] << endl;
+	}
+	cout << CUTOFF_LINE << endl << COMMAND_HELP_MESSAGE << endl << CUTOFF_LINE << endl;
+	currentPage--;
+}
 void Editor::printPage() {
-	int lineBeginIdx = getBeginLineNum(currentPage) + 1;
 	vector<string> page = textFile_->getPageList().at(currentPage);
-	int lineNumInPage = page.size();
-
-	for(int lineIter = 0; lineIter < page.size(); lineIter++) {
+	int lineBeginIdx = getBeginLineNum(currentPage) + 1;
+	int pageSize = textFile_->getPageSize(currentPage);
+	
+	for(int lineIter = 0; lineIter < pageSize; lineIter++) {
 		cout << setw(2) << lineBeginIdx + lineIter << "|\t" << page[lineIter] << endl;
 	}
 	cout << CUTOFF_LINE << endl << COMMAND_HELP_MESSAGE << endl << CUTOFF_LINE << endl;
+}
+void Editor::printNextPage() {
+	vector<string> resultPage;
+	vector<string> curPage = textFile_->getPageList().at(currentPage);
+	vector<string> nextPage = textFile_->getPageList().at(currentPage + 1);
+	int lineBeginIdx = getBeginLineNum(currentPage + 1) + 1;
+	int nextPageSize = textFile_->getPageSize(currentPage + 1);
 
+	if (textFile_->isLastPage(currentPage + 1) && nextPageSize < MAX_LINE_NUM) {
+
+		lineBeginIdx = getBeginLineNum(currentPage + 1) - (MAX_LINE_NUM - nextPageSize);
+		for (int curIdx = nextPageSize - 1; curIdx < curPage.size(); curIdx++) {
+			resultPage.push_back(curPage[curIdx]);
+		}
+	}
+	for (int curIdx = 0; curIdx < nextPage.size(); curIdx++) {
+		resultPage.push_back(nextPage[curIdx]);
+	}
+
+	for (int lineIter = 0; lineIter < resultPage.size(); lineIter++) {
+		cout << setw(2) << lineBeginIdx + lineIter << "|\t" << resultPage[lineIter] << endl;
+	}
+	cout << CUTOFF_LINE << endl << COMMAND_HELP_MESSAGE << endl << CUTOFF_LINE << endl;
+	currentPage++;
 }
 int Editor::getBeginLineNum(int pageNo) {
 	int lineNum = 0;
 	
 	for (int pageIdx = 0; pageIdx < pageNo; pageIdx++) {
-		lineNum += textFile_->getPageList().at(pageIdx).size();
+		lineNum += textFile_->getPageSize(pageIdx);
 	}
 	return lineNum;
 }
 
 void Editor::printError() {
+	if (state == STATE_NORMAL)
+		return;
 	switch (errorType) {
 	case ERROR_FILE_NOT_FOUND:
 		cout << ERR_MSG_FILE_NOT_FOUND << ERR_MSG_TERMINATE;

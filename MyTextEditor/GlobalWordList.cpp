@@ -7,9 +7,6 @@ using namespace std;
 
 GlobalWordList::GlobalWordList() {
 }
-GlobalWordList::GlobalWordList(vector<string>& wordList) {
-	wordList_ = wordList;
-}
 
 GlobalWordList* GlobalWordList::getInstance() {
 	if (!s_instance)
@@ -22,25 +19,14 @@ void GlobalWordList::setWordList(vector<string>& wordList) {
 vector<string>& GlobalWordList::getWordList() {
 	return wordList_;
 }
-vector<string>& GlobalWordList::getSubWordList(int beginIdx, int endIdx) {
-	vector<string> subWordList;
-	subWordList.assign(wordList_.begin() + beginIdx, wordList_.end() + endIdx);
-	return subWordList;
-}
-int GlobalWordList::wordListSize() {
-	return wordList_.size();
-}
+
 void GlobalWordList::insertWord(int idx, string word) {
 	wordList_.insert(wordList_.begin() + idx, word);
 }
 void GlobalWordList::delWord(int idx) {
 	wordList_.erase(wordList_.begin() + idx);
 }
-void GlobalWordList::modifyWord(int idx, string newWord) {
 
-	delWord(idx);
-	insertWord(idx, newWord);
-}
 void GlobalWordList::modifyAllWord(string word, string newWord) {
 	for (int i = 0; i < wordList_.size(); i++) {
 		if (wordList_[i] == word) {
@@ -77,7 +63,6 @@ int GlobalWordList::getIndex(int lineNum, int wordNum) {
 			sumOfByte += 1;
 		}
 	}
-
 	
 	return -1;
 }

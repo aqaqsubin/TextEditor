@@ -66,9 +66,21 @@ void TextFile::setPageList(vector<string>& wordList) {
 			line.append(" ");
 		}
 	}
+	page.push_back(line);
+	pageList.push_back(page);
 }
 vector<vector<string>> TextFile::getPageList() {
 	return pageList;
+}
+
+int TextFile::getPageListSize() {
+	return pageList.size();
+}
+int TextFile::getPageSize(int pageNo) {
+	return pageList[pageNo].size();
+}
+bool TextFile::isLastPage(int pageNo) {
+	return pageNo == pageList.size() - 1;
 }
 int TextFile::restructPageList(vector<string> wordList, int searchWordIdx) {
 	int sumOfByte = 0;
@@ -94,17 +106,20 @@ int TextFile::restructPageList(vector<string> wordList, int searchWordIdx) {
 			page.clear();
 			lineIter = 1;
 		}
-		if (i == searchWordIdx && sumOfByte) {
-			page.push_back(line);
-			line.clear();
-			sumOfByte = 0;
-
+		if (i == searchWordIdx) {
+			if (sumOfByte) {
+				page.push_back(line);
+				line.clear();
+				sumOfByte = 0;
+			}
+			
 			pageList.push_back(page);
 			pageIdx = pageList.size();
 
 			page.clear();
 			lineIter = 1;
 		}
+
 		sumOfByte += wordList[i].size();
 		line.append(wordList[i]);
 		if (sumOfByte < MAX_LINE_SIZE) {
@@ -112,6 +127,8 @@ int TextFile::restructPageList(vector<string> wordList, int searchWordIdx) {
 			line.append(" ");
 		}
 	}
+	page.push_back(line);
+	pageList.push_back(page);
 	return pageIdx;
 }
 

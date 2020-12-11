@@ -25,7 +25,9 @@ private:
 
 	int modifyAllWord(vector<string> params);
 
-	int restructByWord(vector<string> params);
+	int restructByWord(string param);
+
+	int restorePageList();
 
 	void saveFile();
 
@@ -39,7 +41,11 @@ public:
 
 	void handlingCommand(string command);
 
+	void printPrePage();
+
 	void printPage();
+
+	void printNextPage();
 
 	void printError();
 

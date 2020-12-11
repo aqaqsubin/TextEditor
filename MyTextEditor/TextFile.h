@@ -6,6 +6,7 @@
 class TextFile {
 private:
 	vector<vector<string>> pageList;
+	vector<int> newLineList;
 	string filePath_;
 	string text_;
 
@@ -20,6 +21,11 @@ public:
 
 	vector<vector<string>> getPageList();
 
-	void saveTextFile(vector<string>& wordList);
+	int getPageListSize();
 
+	int getPageSize(int pageNo);
+
+	bool isLastPage(int pageNo);
+
+	void saveTextFile(vector<string>& wordList);
 };

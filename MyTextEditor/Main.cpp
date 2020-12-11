@@ -1,16 +1,16 @@
 #include "GlobalWordList.h"
-#include "ConsoleIO.h"
+#include "Editor.h"
 #include <iostream>
 
 int main() {
-	ConsoleIO console;
+	Editor console;
 	
 	try {
-		console.loadTextFile("C://Users//kisti_user//Documents//TextEditor//test.txt");
+		console.loadTextFile("C://Users//aqaq9//Documents//TextEditor//test.txt");
 		console.printPage();
 	}
 	catch (string& str) {
-		cout << str << endl;
+		console.printError();
 		return -1;
 	}
 	

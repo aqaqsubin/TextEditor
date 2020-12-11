@@ -19,7 +19,7 @@ TextFile::TextFile(string path) {
 		text_.append(readBuffer).append(" ");
 	}
 	else
-		throw string("File Cannot Open");
+		throw string(ERR_MSG_FILE_NOT_FOUND);
 
 	in.close();
 }

@@ -4,18 +4,26 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
-#include "ConsoleIO.h"
+#include "Editor.h"
 #include "GlobalWordList.h"
 
-void ConsoleIO::loadTextFile(string path) {
-	textFile_ = new TextFile(path);
-	vector<string> wordList_(textFile_->createWordList(DELIMITER_WORD));
-	GlobalWordList::getInstance()->setWordList(wordList_);
+void Editor::loadTextFile(string path) {
+	try {
+		textFile_ = new TextFile(path);
+		vector<string> wordList_(textFile_->createWordList(DELIMITER_WORD));
+		GlobalWordList::getInstance()->setWordList(wordList_);
 
-	textFile_->setPageList(wordList_);
+		textFile_->setPageList(wordList_);
+	}
+	catch (string& errorMsg) {
+		state = STATE_ERROR;
+		errorType = ERROR_FILE_NOT_FOUND;
+		throw;
+	}
+	
 }
 
-int ConsoleIO::loadCommand(string command) {
+int Editor::loadCommand(string command) {
 	string param;
 
 	params_.clear();
@@ -37,27 +45,27 @@ int ConsoleIO::loadCommand(string command) {
 	}
 	return STATE_NORMAL;
 }
-int ConsoleIO::checkLineNum(string paramLineNum) {
+int Editor::checkLineNum(string paramLineNum) {
 	int lineNum = atoi(paramLineNum.c_str());
 
 	if (lineNum < 1)
 		return STATE_ERROR;
 	return STATE_NORMAL;
 }
-int ConsoleIO::checkWordNum(string paramsWordNum) {
+int Editor::checkWordNum(string paramsWordNum) {
 	int wordNum = atoi(paramsWordNum.c_str());
 
 	if (wordNum > MAX_LINE_SIZE || wordNum < 1)
 		return STATE_ERROR;
 	return STATE_NORMAL;
 }
-int ConsoleIO::checkWord(string word) {
+int Editor::checkWord(string word) {
 	if (word.size() > MAX_LINE_NUM || word.size() == 0 || word == " ")
 		return STATE_ERROR;
 	return STATE_NORMAL;
 }
 
-int ConsoleIO::checkCommandValid(char commandType, vector<string> params) {
+int Editor::checkCommandValid(char commandType, vector<string> params) {
 
 	errorType = NOT_ERROR;
 	switch (commandType) {
@@ -112,7 +120,7 @@ int ConsoleIO::checkCommandValid(char commandType, vector<string> params) {
 	}
 }
 
-void ConsoleIO::handlingCommand(string command) {
+void Editor::handlingCommand(string command) {
 
 	state |= loadCommand(command);
 	state |= checkCommandValid(commandType_, params_);
@@ -146,7 +154,7 @@ void ConsoleIO::handlingCommand(string command) {
 	}
 }
 
-int ConsoleIO::insertWord(vector<string> params) {
+int Editor::insertWord(vector<string> params) {
 	int lineNum = atoi(params[0].c_str());
 	int wordNum = atoi(params[1].c_str());
 	int idx = GlobalWordList::getInstance()->getIndex(lineNum, wordNum);
@@ -161,7 +169,7 @@ int ConsoleIO::insertWord(vector<string> params) {
 	return STATE_NORMAL;
 }
 
-int ConsoleIO::delWord(vector<string> params) {
+int Editor::delWord(vector<string> params) {
 	int lineNum = atoi(params[0].c_str());
 	int wordNum = atoi(params[1].c_str());
 	int idx = GlobalWordList::getInstance()->getIndex(lineNum, wordNum);
@@ -176,13 +184,13 @@ int ConsoleIO::delWord(vector<string> params) {
 	return STATE_NORMAL;
 }
 
-int ConsoleIO::modifyAllWord(vector<string> params) {
+int Editor::modifyAllWord(vector<string> params) {
 	GlobalWordList::getInstance()->modifyAllWord(params[0], params[1]);
 	textFile_->setPageList(GlobalWordList::getInstance()->getWordList());
 	return STATE_NORMAL;
 }
 
-int ConsoleIO::restructByWord(vector<string> params) {
+int Editor::restructByWord(vector<string> params) {
 	int idx = GlobalWordList::getInstance()->getIndex(params[0]);
 	if (idx < 0) {
 		errorType = ERROR_NOT_FOUND_WORD;
@@ -193,12 +201,12 @@ int ConsoleIO::restructByWord(vector<string> params) {
 	return STATE_NORMAL;
 }
 
-void ConsoleIO::saveFile() {
+void Editor::saveFile() {
 	textFile_->saveTextFile(GlobalWordList::getInstance()->getWordList());
 	state = STATE_TERMINATE;
 }
 
-void ConsoleIO::printPage() {
+void Editor::printPage() {
 	int lineBeginIdx = getBeginLineNum(currentPage) + 1;
 	vector<string> page = textFile_->getPageList().at(currentPage);
 	int lineNumInPage = page.size();
@@ -209,7 +217,7 @@ void ConsoleIO::printPage() {
 	cout << CUTOFF_LINE << endl << COMMAND_HELP_MESSAGE << endl << CUTOFF_LINE << endl;
 
 }
-int ConsoleIO::getBeginLineNum(int pageNo) {
+int Editor::getBeginLineNum(int pageNo) {
 	int lineNum = 0;
 	
 	for (int pageIdx = 0; pageIdx < pageNo; pageIdx++) {
@@ -218,8 +226,11 @@ int ConsoleIO::getBeginLineNum(int pageNo) {
 	return lineNum;
 }
 
-void ConsoleIO::printError() {
+void Editor::printError() {
 	switch (errorType) {
+	case ERROR_FILE_NOT_FOUND:
+		cout << ERR_MSG_FILE_NOT_FOUND << ERR_MSG_TERMINATE;
+		break;
 	case ERROR_COMMAND_TYPE :
 		cout << ERR_MSG_COMMAND_TYPE << ERR_MSG_RE_INPUT;
 		break;

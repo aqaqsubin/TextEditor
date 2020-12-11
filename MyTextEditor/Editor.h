@@ -4,7 +4,7 @@
 #include <vector>
 
 #pragma once
-class ConsoleIO {
+class Editor {
 
 private:
 	char commandType_;

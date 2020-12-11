@@ -3,29 +3,21 @@
 #include <string>
 #include <vector>
 
-enum ErrorType{
-	NOT_ERROR= 0,
-	ERROR_PARAMETER_NUM = 1,
-	ERROR_PARAMETER_VAL,
-	ERROR_OUT_OF_PAGE,
-	ERROR_OUT_OF_INDEX,
-	ERROR_NOT_FOUND_WORD,
-	ERROR_COMMAND_TYPE
-};
-
 #pragma once
 class ConsoleIO {
 
 private:
+	char commandType_;
+	vector<string> params_;
 	int currentPage = 0;
 	TextFile* textFile_;
-	vector<string> splitParameters(string paramsText);
+	int loadCommand(string command);
 
 	int checkLineNum(string paramLineNum);
 	int checkWordNum(string paramWordNum);
 	int checkWord(string word);
 
-	int checkUserInput(char commandType, vector<string> params);
+	int checkCommandValid(char commandType, vector<string> params);
 
 	int insertWord(vector<string> params);
 
@@ -37,10 +29,6 @@ private:
 
 	void saveFile();
 
-	void printPage(int pageNo);
-
-	void printError();
-
 	int getBeginLineNum(int pageNo);
 
 public:
@@ -50,4 +38,9 @@ public:
 	void loadTextFile(string path);
 
 	void handlingCommand(string command);
+
+	void printPage();
+
+	void printError();
+
 };

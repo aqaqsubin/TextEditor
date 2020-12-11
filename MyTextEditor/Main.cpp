@@ -6,8 +6,8 @@ int main() {
 	ConsoleIO console;
 	
 	try {
-		console.loadTextFile("C://Users//aqaq9//Documents//TextEditor//test.txt");
-		console.printPage(0);
+		console.loadTextFile("C://Users//kisti_user//Documents//TextEditor//test.txt");
+		console.printPage();
 	}
 	catch (string& str) {
 		cout << str << endl;
@@ -17,14 +17,15 @@ int main() {
 	string command;
 	while (console.state) {
 		cout << "ют╥б : ";
-		cin >> command;
+		getline(cin, command);
 		cout << CUTOFF_LINE << endl;
 
 		console.handlingCommand(command);
-		
+		console.printPage();
 		if (console.state == STATE_ERROR) {
 			console.printError();
 		}
+		
 	}
 
 	cout << "end" << endl;

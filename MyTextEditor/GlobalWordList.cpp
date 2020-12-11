@@ -63,19 +63,22 @@ int GlobalWordList::getIndex(int lineNum, int wordNum) {
 
 	int wordIter = 1;
 	for (int i = 0; i < wordList_.size(); i++) {
-		if (lineIter == lineNum && wordIter == wordNum)
-			return i;
-
 		if (sumOfByte + wordList_[i].size() > MAX_LINE_SIZE) {
 			lineIter++;
 			sumOfByte = 0;
+			wordIter = 1;
 		}
+		if (lineIter == lineNum && wordIter == wordNum)
+			return i;
+
 		wordIter++;
 		sumOfByte += wordList_[i].size();
 		if (sumOfByte < MAX_LINE_SIZE) {
 			sumOfByte += 1;
 		}
 	}
+
+	
 	return -1;
 }
 GlobalWordList* GlobalWordList::s_instance = 0;

@@ -15,27 +15,32 @@ void ConsoleIO::loadTextFile(string path) {
 	textFile_->setPageList(wordList_);
 }
 
-vector<string> ConsoleIO::splitParameters(string paramsText) {
-	
-	vector<string> params;
+int ConsoleIO::loadCommand(string command) {
 	string param;
+
+	params_.clear();
 	try {
+		commandType_ = command[0];
+		if (commandType_ == COMMAND_NEXT_PAGE || commandType_ == COMMAND_PRE_PAGE || commandType_ == COMMAND_SAVE_FILE)
+			return STATE_NORMAL;
+
+		string paramsText(command.substr(1, command.size() - 1));
 		paramsText = paramsText.substr(1, paramsText.size() - 2);
 		stringstream strStream(paramsText);
 
 		while (getline(strStream, param, DELIMITER_PARAMETER)) {
-			params.push_back(param);
+			params_.push_back(param);
 		}
 
 	}catch (exception& e) {
-		//cout << e.what() << endl;
+		return STATE_ERROR;
 	}
-	return params;
+	return STATE_NORMAL;
 }
 int ConsoleIO::checkLineNum(string paramLineNum) {
 	int lineNum = atoi(paramLineNum.c_str());
 
-	if (lineNum > MAX_LINE_NUM || lineNum < 1)
+	if (lineNum < 1)
 		return STATE_ERROR;
 	return STATE_NORMAL;
 }
@@ -51,7 +56,8 @@ int ConsoleIO::checkWord(string word) {
 		return STATE_ERROR;
 	return STATE_NORMAL;
 }
-int ConsoleIO::checkUserInput(char commandType, vector<string> params) {
+
+int ConsoleIO::checkCommandValid(char commandType, vector<string> params) {
 
 	errorType = NOT_ERROR;
 	switch (commandType) {
@@ -108,38 +114,31 @@ int ConsoleIO::checkUserInput(char commandType, vector<string> params) {
 
 void ConsoleIO::handlingCommand(string command) {
 
-	char commandType = command[0];
-	string paramsText = command.substr(1, command.size() - 1);
-	vector<string> params = splitParameters(paramsText);
-
-	state = checkUserInput(commandType, params);
+	state |= loadCommand(command);
+	state |= checkCommandValid(commandType_, params_);
 
 	if (state == STATE_ERROR) {
 		errorType = errorType == NOT_ERROR ? ERROR_PARAMETER_VAL : errorType;
 		return;
 	}
-	switch (commandType) {
+	switch (commandType_) {
 	case COMMAND_INSERT_WORD:
-		state = insertWord(params);
-		printPage(currentPage);
+		state = insertWord(params_);
 		break;
 	case COMMAND_DELETE_WORD:
-		state = delWord(params);
-		printPage(currentPage);
+		state = delWord(params_);
 		break;
 	case COMMAND_RESTRUCT_PAGE:
-		state = restructByWord(params);
-		printPage(currentPage);
+		state = restructByWord(params_);
 		break;
 	case COMMAND_MODIFY_WORD:
-		state = modifyAllWord(params);
-		printPage(currentPage);
+		state = modifyAllWord(params_);
 		break;
 	case COMMAND_PRE_PAGE:
-		printPage(--currentPage);
+		--currentPage;
 		break;
 	case COMMAND_NEXT_PAGE:
-		printPage(++currentPage);
+		++currentPage;
 		break;
 	case COMMAND_SAVE_FILE:
 		saveFile();
@@ -199,9 +198,9 @@ void ConsoleIO::saveFile() {
 	state = STATE_TERMINATE;
 }
 
-void ConsoleIO::printPage(int pageNo) {
-	int lineBeginIdx = getBeginLineNum(pageNo) + 1;
-	vector<string> page = textFile_->getPageList().at(pageNo);
+void ConsoleIO::printPage() {
+	int lineBeginIdx = getBeginLineNum(currentPage) + 1;
+	vector<string> page = textFile_->getPageList().at(currentPage);
 	int lineNumInPage = page.size();
 
 	for(int lineIter = 0; lineIter < page.size(); lineIter++) {
@@ -243,4 +242,6 @@ void ConsoleIO::printError() {
 		cout << ERR_MSG_RE_INPUT;
 	}
 	cout << CUTOFF_LINE << endl;
+
+	state = STATE_NORMAL;
 }

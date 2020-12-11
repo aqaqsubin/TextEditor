@@ -36,4 +36,15 @@
 
 #define ERR_MSG_RE_INPUT		"다시 입력하세요. \n"
 
+enum ErrorType {
+	NOT_ERROR = 0,
+	ERROR_PARAMETER_NUM = 1,
+	ERROR_PARAMETER_VAL,
+	ERROR_OUT_OF_PAGE,
+	ERROR_OUT_OF_INDEX,
+	ERROR_NOT_FOUND_WORD,
+	ERROR_COMMAND_TYPE,
+	ERROR_INPUT_LENGTH
+};
+
 using namespace std;

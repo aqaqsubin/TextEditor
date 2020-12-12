@@ -157,7 +157,7 @@ void Editor::handlingCommand(string command) {
 	}
 
 	printError();
-	if (commandType_ != COMMAND_NEXT_PAGE || commandType_ != COMMAND_PRE_PAGE)
+	if (commandType_ != COMMAND_NEXT_PAGE && commandType_ != COMMAND_PRE_PAGE)
 		printPage();
 
 }
@@ -283,7 +283,7 @@ int Editor::getBeginLineNum(int pageNo) {
 }
 
 void Editor::printError() {
-	if (state == STATE_NORMAL)
+	if (state == STATE_NORMAL || state == STATE_TERMINATE)
 		return;
 	switch (errorType) {
 	case ERROR_FILE_NOT_FOUND:

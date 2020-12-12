@@ -7,10 +7,12 @@
 class Editor {
 
 private:
-	char commandType_;
-	vector<string> params_;
-	int currentPage = 0;
 	TextFile* textFile_;
+	vector<string> params_;
+	
+	char commandType_;
+	int currentPage = 0;
+	
 	int loadCommand(string command);
 
 	int checkLineNum(string paramLineNum);

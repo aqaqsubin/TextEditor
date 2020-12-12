@@ -6,7 +6,6 @@
 class TextFile {
 private:
 	vector<vector<string>> pageList;
-	vector<int> newLineList;
 	string filePath_;
 	string text_;
 
